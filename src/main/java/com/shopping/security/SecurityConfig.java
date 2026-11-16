@@ -69,10 +69,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(SecurityConstants.PUBLIC_URLS).permitAll()
-                        .requestMatchers("/api/v1/admin/users/**", "/api/v1/admin/coupons/**", "/api/v1/admin/reports/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/admin/products/**", "/api/v1/admin/categories/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/admin/users/**", "/api/v1/admin/coupons/**", "/api/v1/admin/reports/**",
+                                "/api/v1/admin/products/**", "/api/v1/admin/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/admin/orders/**", "/api/v1/admin/inventory/**").hasAnyRole("STAFF", "ADMIN")
+                        .requestMatchers(SecurityConstants.PUBLIC_URLS).permitAll()
                         .requestMatchers("/api/v1/users/me/**", "/api/v1/addresses/**").authenticated()
                         .requestMatchers("/api/v1/cart/**", "/api/v1/orders/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
