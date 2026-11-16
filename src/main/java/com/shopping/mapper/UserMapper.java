@@ -1,6 +1,7 @@
 package com.shopping.mapper;
 
 import com.shopping.dto.response.auth.UserSummaryResponse;
+import com.shopping.dto.response.user.UserProfileResponse;
 import com.shopping.entity.Role;
 import com.shopping.entity.User;
 import org.mapstruct.Mapper;
@@ -11,12 +12,17 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AddressMapper.class})
 public interface UserMapper {
 
     @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToStringSet")
     @Mapping(target = "status", expression = "java(user.getStatus().name())")
     UserSummaryResponse toUserSummaryResponse(User user);
+
+    @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToStringSet")
+    @Mapping(target = "status", expression = "java(user.getStatus().name())")
+    @Mapping(target = "addresses", ignore = true)
+    UserProfileResponse toUserProfileResponse(User user);
 
     @Named("mapRolesToStringSet")
     default Set<String> mapRolesToStringSet(Set<Role> roles) {
