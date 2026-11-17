@@ -30,6 +30,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Long categoryId, Long productId, ProductStatus status, Pageable pageable
     );
 
+    Page<Product> findByStatus(ProductStatus status, Pageable pageable);
+
+    Page<Product> findByCategory_CategoryIdAndStatus(Long categoryId, ProductStatus status, Pageable pageable);
+
     @Query("SELECT DISTINCT p FROM Product p " +
             "LEFT JOIN p.variants v " +
             "WHERE (:status IS NULL OR p.status = :status) " +
@@ -43,10 +47,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "     LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "     LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "     LOWER(p.brand) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Product> findByStatus(ProductStatus status, Pageable pageable);
-
-    Page<Product> findByCategory_CategoryIdAndStatus(Long categoryId, ProductStatus status, Pageable pageable);
-
     Page<Product> filterProducts(
             @Param("keyword") String keyword,
             @Param("categoryId") Long categoryId,
