@@ -10,6 +10,14 @@ public final class SecurityConstants {
     public static final String USER_ID_CLAIM = "userId";
 
     public static final String[] PUBLIC_URLS = {
+            "/",
+            "/index.html",
+            "/*.html",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/assets/**",
+            "/favicon.ico",
             "/api/v1/auth/**",
             "/api/v1/products/**",
             "/api/v1/categories/**",
