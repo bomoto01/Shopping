@@ -5,15 +5,16 @@ Dự án Website bán hàng quần áo thời trang tích hợp trí tuệ nhân
 ---
 
 ## 🛠️ Công nghệ sử dụng
-- **Ngôn ngữ:** Java 21 (LTS)
+- **Ngôn ngữ:** Java 21 (Adoptium Temurin LTS)
 - **Framework:** Spring Boot 3.3.5
 - **ORM / Persistence:** Spring Data JPA / Hibernate (MySQL 8.x)
-- **Security:** Spring Security 6, Stateless JWT (JJWT 0.12.6)
+- **Security:** Spring Security 6, Stateless JWT (JJWT 0.12.6, SHA-256 Hashed Refresh Token)
 - **Validation:** Hibernate Validator / Spring Validation
-- **Boilerplate & Object Mapping:** Project Lombok, MapStruct
-- **API Documentation:** SpringDoc OpenAPI 3 (Swagger UI)
+- **Boilerplate & Object Mapping:** Project Lombok 1.18.36, MapStruct 1.5.5.Final
+- **API Documentation:** SpringDoc OpenAPI 3 (Swagger UI 2.6.0)
 - **Monitoring & Metrics:** Spring Boot Actuator
 - **Build Tool:** Apache Maven 3.9+
+- **Unit Testing:** JUnit 5, Mockito 5 (Subclass Mock Maker tối ưu)
 
 ---
 
@@ -62,6 +63,10 @@ Cấu hình các biến môi trường (hoặc sử dụng mặc định trong `
 | `JWT_SECRET` | `(chuỗi 256-bit bí mật)` | Khóa bí mật ký JWT |
 | `AI_SERVICE_URL` | `http://localhost:8000` | URL dịch vụ gợi ý FastAPI |
 
+Tài khoản quản trị viên mặc định được khởi tạo tự động khi chạy lần đầu:
+- **Email:** `admin@shopping.vn`
+- **Mật khẩu:** `Admin@123456`
+
 ### 3. Biên dịch và kiểm thử
 ```bash
 mvn clean test
@@ -80,7 +85,18 @@ mvn spring-boot:run
 
 ## 📌 Tiến độ phát triển
 - [x] **Giai đoạn 1:** Khởi tạo dự án, Maven POM, cấu hình MySQL, ApiResponse, GlobalExceptionHandler, cấu trúc Layered.
-- [ ] **Giai đoạn 2:** Xây dựng Authentication, Authorization, JWT Access/Refresh Token, phân quyền ROLE_CUSTOMER / ROLE_STAFF / ROLE_ADMIN.
-- [ ] **Giai đoạn 3:** Xây dựng CRUD cho 20 bảng cơ sở dữ liệu (User, Product, Category, Variant, Cart, Order, Coupon, Review,...).
-- [ ] **Giai đoạn 4:** Triển khai nghiệp vụ bán hàng chuyên sâu, trừ tồn kho an toàn, chống giả mạo sự kiện AI, fallback gợi ý.
-- [ ] **Giai đoạn 5:** Kiểm thử toàn diện, viết Unit Test / Integration Test, tối ưu hiệu năng.
+- [x] **Giai đoạn 2:** Xây dựng Authentication & Authorization:
+  - Đăng ký, Đăng nhập, JWT Access/Refresh Token (SHA-256 hashed), Logout, Thu hồi token, Đổi mật khẩu.
+  - Phân quyền RBAC (`ROLE_CUSTOMER`, `ROLE_STAFF`, `ROLE_ADMIN`).
+- [x] **Giai đoạn 3:** Xây dựng CRUD cho các bảng cơ sở dữ liệu:
+  - Nhóm 1: User Profile, Sổ địa chỉ (Address), Quyền riêng tư AI (TC-10).
+  - Nhóm 2: Danh mục phân cấp (Category), Sản phẩm (Product), Biến thể SKU (ProductVariant), Thư viện ảnh (ProductImage).
+  - Nhóm 3: Quản lý Tồn kho (Inventory) & Lịch sử biến động kho (InventoryTransaction).
+  - Nhóm 4: Mã giảm giá (Coupon) với ràng buộc ngày hết hạn (TC-06), đơn tối thiểu (TC-07), giới hạn lượt dùng (TC-08).
+  - Nhóm 5: Danh sách yêu thích (Wishlist) & Giỏ hàng (Cart, CartItem).
+- [x] **Giai đoạn 4:** Triển khai nghiệp vụ bán hàng chuyên sâu:
+  - **4.1 Quản lý Đơn hàng (Orders):** Checkout giao dịch `@Transactional`, kiểm tra và trừ tồn kho an toàn (`ORDER_RESERVATION`, TC-05), lưu snapshot giá/SKU/thuộc tính/địa chỉ, hủy đơn hoàn tồn kho (`ORDER_CANCELLATION`), quản lý vòng đời trạng thái đơn hàng và ghi nhật ký lịch sử (`OrderStatusHistory`).
+  - **4.2 Đánh giá Sản phẩm (Reviews):** Ràng buộc chỉ đánh giá khi đơn hàng `DELIVERED`, ràng buộc duy nhất mỗi dòng sản phẩm chỉ được đánh giá 1 lần (TC-13), duyệt/ẩn đánh giá.
+  - **4.3 Tương tác Hành vi & Gợi ý AI:** Chống giả mạo hành vi Client chỉ chấp nhận `VIEW`/`CLICK` (TC-11), tuân thủ quyền riêng tư Opt-out không lưu DB khi tắt (TC-10), gợi ý sản phẩm tích hợp AI và tự động chuyển sang Fallback sản phẩm phổ biến khi lỗi/timeout (TC-09).
+  - **4.4 Báo cáo Thống kê Doanh thu (Admin Dashboard):** Tổng doanh thu các đơn hàng thành công, số lượng đơn theo từng trạng thái, tổng số khách hàng/sản phẩm, top sản phẩm bán chạy nhất hệ thống.
+- [ ] **Giai đoạn 5:** Kiểm thử toàn diện, hoàn thiện tài liệu kiểm thử và nghiệm thu dự án.
